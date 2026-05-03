@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Votació Professors Orla 2025-26</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: auto; padding: 20px; background-color: #f9f9f9; }
+        .caixa { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .professor { border-bottom: 1px solid #eee; padding: 15px 0; display: flex; align-items: center; }
+        .professor:last-child { border-bottom: none; }
+        .professor img { width: 80px; height: 80px; object-fit: cover; border-radius: 50%; margin-right: 20px; border: 1px solid #ccc; }
+        .info { flex-grow: 1; }
+        .opcions { display: flex; gap: 15px; font-weight: bold; }
+        .btn-enviar { margin-top: 20px; padding: 12px 20px; background-color: #28a745; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; width: 100%; }
+        .btn-enviar:hover { background-color: #218838; }
+    </style>
+</head>
+<body>
+
+    <div class="caixa">
+        <h2>Votació de Professors - Orla 2025-26</h2>
+        <p>Vols que aquest professor aparegui a la llista dels professors de l'orla d'aquest any?</p>
+        
+        <form action="/votar" method="POST">
+            {% for prof in professors %}
+            <div class="professor">
+                <img src="{{ url_for('static', filename='imatges/' + prof['Imatge']) }}" alt="Foto de {{ prof['NomCognoms'] }}">
+                <div class="info">
+                    <strong>{{ prof['NomCognoms'] }}</strong><br>
+                    <small style="color: gray;">{{ prof['Correu'] }}</small>
+                </div>
+                <div class="opcions">
+                    <label>
+                        <input type="radio" name="{{ prof['NomCognoms'] }}" value="1"> Sí
+                    </label>
+                    <label>
+                        <input type="radio" name="{{ prof['NomCognoms'] }}" value="0"> No
+                    </label>
+                </div>
+            </div>
+            {% endfor %}
+            
+            <button type="submit" class="btn-enviar">Confirmar Votació</button>
+        </form>
+    </div>
+
+</body>
+</html>
