@@ -2,21 +2,23 @@ from flask import Flask, render_template, request
 import csv
 import os
 
-TEACHERS_FILE = 'professors.csv'
-TEMPLATE_FILE = 'index.html'
-RESULTS_FILE = 'resultats.csv'
+BASE_DIR = os.path.dirname(__file__)
+
+TEACHERS_PATH = os.path.join(BASE_DIR, "professors.csv")
+RESULTS_PATH = os.path.join(BASE_DIR, "resultats.csv")
+IMAGES_DIR =  os.path.join(BASE_DIR, "static/imatges")
+TEMPLATE_NAME = "index.html"
+DEFAULT_IMAGE = "default.jpg"
 RETURN_MESSAGE = \
     "<h1>Gràcies per la teva votació!</h1>"\
     "<p>El teu vot s'ha registrat correctament.</p>"
 
-IMAGES_DIR = 'static/imatges'
-DEFAULT_IMAGE = 'default.jpg'
 
 app = Flask(__name__)
 
 def read_teachers():
     teachers = []
-    with open(TEACHERS_FILE, mode='r', encoding='utf-8') as file:
+    with open(TEACHERS_PATH, mode='r', encoding='utf-8') as file:
         reader = csv.DictReader(file)
         for row in reader:
             name = row['NomCognoms']
@@ -35,7 +37,7 @@ def read_teachers():
 @app.route('/')
 def index():
     professors = read_teachers()
-    return render_template(TEMPLATE_FILE, professors=professors)
+    return render_template(TEMPLATE_NAME, professors=professors)
 
 @app.route('/votar', methods=['POST'])
 def vote():
@@ -47,7 +49,7 @@ def vote():
         vote = request.form.get(name, '0') 
         votes.append(vote)
         
-    results_file = RESULTS_FILE
+    results_file = RESULTS_PATH
     file_exists = os.path.isfile(results_file)
     
     with open(results_file, mode='a', newline='', encoding='utf-8') as file:
