@@ -5,8 +5,8 @@ import unicodedata
 
 BASE_DIR = os.path.dirname(__file__)
 
-TEACHERS_PATH = os.path.join(BASE_DIR, "professors.csv")
-RESULTS_PATH = os.path.join(BASE_DIR, "resultats.csv")
+TEACHERS_PATH = os.path.join(BASE_DIR, "data/professors.csv")
+RESULTS_PATH = os.path.join(BASE_DIR, "data/resultats.csv")
 IMAGES_DIR =  os.path.join(BASE_DIR, "static/imatges")
 TEMPLATE_NAME = "index.html"
 DEFAULT_IMAGE = "default.jpg"
@@ -14,9 +14,7 @@ RETURN_MESSAGE = \
     "<h1>Gràcies per la teva votació!</h1>"\
     "<p>El teu vot s'ha registrat correctament.</p>"
 
-
 app = Flask(__name__)
-
 
 def generate_image_name(name: str) -> str:
     name = unicodedata.normalize('NFKD', name)
@@ -24,48 +22,59 @@ def generate_image_name(name: str) -> str:
     name = name.lower().replace(' ', '_') + '.jpg'    
     return name
 
-def read_teachers(path: str = TEACHERS_PATH) -> list[dict]:
+def read_teachers(
+    path: str = TEACHERS_PATH,
+    key: str = "ProfessorNom",
+    image: str = "Imatge"
+) -> list[dict]:
     teachers = []
     with open(path, mode='r', encoding='utf-8') as file:
         reader = csv.DictReader(file)
         for row in reader:
-            name = row['NomCognoms']
-            row['Imatge'] = generate_image_name(name)\
+            name = row[key]
+            row[image] = generate_image_name(name)\
                 if name\
                 else DEFAULT_IMAGE 
             teachers.append(row)
-        teachers = sorted(teachers, key=lambda t: t["NomCognoms"])
+        teachers = sorted(teachers, key=lambda t: t[key])
         for teacher in teachers:
-            image_name = teacher['Imatge']
+            image_name = teacher[image]
             image_path = os.path.join(IMAGES_DIR, image_name)
             if not os.path.exists(image_path):
-                teacher["Imatge"] = DEFAULT_IMAGE
+                teacher[image] = DEFAULT_IMAGE
     return teachers
 
 @app.route('/')
 def index():
     teachers = read_teachers()
-    return render_template(TEMPLATE_NAME, professors=teachers)
+    keys = list(teachers[0].keys())
+    return render_template(TEMPLATE_NAME, professors=teachers, keys=keys)
 
 @app.route('/votar', methods=['POST'])
-def vote():
+def vote(
+    teacher_key_name: str = "ProfessorNom",
+    student_key_name: str = "EstudiantNom",
+    student_key_degree: str = "EstudiantGrau"
+) -> str:
     teachers = read_teachers()
-    teacher_names = [p['NomCognoms'] for p in teachers]
+    teacher_names = [p[teacher_key_name] for p in teachers]
     student_name = request.form.get('nom_estudiant', '')
     student_degree = request.form.get('grau', '')
+
     votes = []
     for name in teacher_names:
         vote = request.form.get(name, '0') 
         votes.append(vote)
-    results_file = RESULTS_PATH
-    file_exists = os.path.isfile(results_file)
-    with open(results_file, mode='a', newline='', encoding='utf-8') as file:
+    
+    file_exists = os.path.isfile(RESULTS_PATH)
+    with open(RESULTS_PATH, mode='a', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
         if not file_exists:
-            header = ['Nom Estudiant', 'Grau'] + teacher_names
+            header = [student_key_name, student_key_degree] + teacher_names
             writer.writerow(header)
         student_row = [student_name, student_degree] + votes
         writer.writerow(student_row)
+    
     return RETURN_MESSAGE
 
 if __name__ == '__main__':

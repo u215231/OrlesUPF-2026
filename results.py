@@ -3,7 +3,7 @@ import os
 from collections import defaultdict
 
 BASE_DIR = os.path.dirname(__file__)
-RESULTS_PATH = os.path.join(BASE_DIR, "resultats.csv")
+RESULTS_PATH = os.path.join(BASE_DIR, "data/resultats.csv")
 
 class Analyzer:
     def analyze_results(self, filepath: str):
