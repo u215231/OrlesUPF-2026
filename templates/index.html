@@ -5,30 +5,136 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Votació Professors Orla 2025-26</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: auto; padding: 20px; background-color: #f9f9f9; }
-        .caixa { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .professor { border-bottom: 1px solid #eee; padding: 15px 0; display: flex; align-items: center; }
-        .professor:last-child { border-bottom: none; }
-        .professor img { width: 80px; height: 80px; object-fit: cover; border-radius: 50%; margin-right: 20px; border: 1px solid #ccc; }
-        .info { flex-grow: 1; }
-        .opcions { display: flex; gap: 15px; font-weight: bold; }
-        .btn-enviar { margin-top: 20px; padding: 12px 20px; background-color: #28a745; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; width: 100%; }
-        .btn-enviar:hover { background-color: #218838; }
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: auto; 
+            padding: 20px; 
+            background-color: #f9f9f9; 
+        }
+        .caixa { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+        }
+        .professor { 
+            border-bottom: 1px solid #eee; 
+            padding: 15px 0; 
+            display: flex; 
+            align-items: center; 
+        }
+        .professor:last-child { 
+            border-bottom: none; 
+        }
+        .professor img { 
+            width: 80px; 
+            height: 80px; 
+            object-fit: cover; 
+            border-radius: 50%; 
+            margin-right: 20px; 
+            border: 1px solid #ccc; 
+        }
+        .info { 
+            flex-grow: 1; 
+        }
+        .opcions input[type="radio"] {
+            transform: scale(1.4); 
+            margin-right: 8px;     
+            cursor: pointer;
+        }
+        .btn-enviar { 
+            margin-top: 20px; 
+            padding: 12px 20px; 
+            background-color: #28a745; 
+            color: white; 
+            border: none; 
+            border-radius: 4px; 
+            font-size: 16px; 
+            cursor: pointer; 
+            width: 100%; 
+        }
+        .btn-enviar:hover { 
+            background-color: #218838; 
+        }
+        @media (max-width: 600px) {
+            .professor {
+                display: grid;
+                grid-template-columns: 80px 1fr;
+                grid-template-areas: 
+                    "foto info"
+                    "foto opcions";
+                column-gap: 20px;
+                row-gap: 10px;     
+                align-items: center;
+            }
+            .professor img {
+                grid-area: foto;
+                margin-right: 0; 
+            }
+            .info {
+                grid-area: info;
+                width: 100%;
+                align-self: end;
+            }
+            .opcions {
+                grid-area: opcions;
+                width: 100%;
+                padding-left: 0;
+                margin-top: 0px;
+                justify-content: flex-start;
+                align-self: start
+            }
+        }
+        select:invalid {
+            color: #757575;
+        }
+        select option {
+            color: #000000;
+        }
     </style>
 </head>
 <body>
 
     <div class="caixa">
-        <h2>Votació de Professors - Orla 2025-26</h2>
+        <h2>Orla Enginyeries TIC 2025-26</h2>
         <p>Vols que aquest professor aparegui a la llista dels professors de l'orla d'aquest any?</p>
+        <p style="color: gray;">
+            Marca amb <b>Sí</b> si vols que el professor hi aparagui. 
+            Qualsevol casella no marcada comptarà automàticament com un <b>No</b>.
+            Les preguntes marcades amb <b>*</b> són obligatòries.
+        </p>
         
         <form action="/votar" method="POST">
+            <div style="background-color: #e9ecef; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <label for="nom_estudiant" style="font-weight: bold; display: block; margin-bottom: 8px;">
+                    Els teu noms i cognoms:<span style="color: red;">*</span>
+                </label>
+                <input type="text" id="nom_estudiant" name="nom_estudiant" required placeholder="Escriu aquí el teu nom..." style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; margin-bottom: 15px;">
+                
+                <label for="grau" style="font-weight: bold; display: block; margin-bottom: 8px;">
+                    El teu grau:<span style="color: red;">*</span>
+                </label>
+                <select id="grau" name="grau" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; background-color: white;">
+                    <option value="" disabled selected style="display: none;">Selecciona el teu grau...</option>
+                    <option value="GEI">GEI</option>
+                    <option value="GESA">GESA</option>
+                    <option value="GEMCD">GEMCD</option>
+                    <option value="GEXT">GEXT</option>
+                </select>
+
+                <label for="subjectFilter" style="font-weight: bold; display: block; margin-top: 15px; margin-bottom: 8px;">
+                    Mostra més o menys professors: <span id="sliderValue">3</span>
+                </label>
+                <input type="range" id="subjectFilter" min="1" max="9" step="1" value="3" style="width: 100%;">
+            </div>
+            
             {% for prof in professors %}
-            <div class="professor">
+            <div class="professor" data-subjects="{{ prof['Quantitat Assignatures Ponderades'] }}">
                 <img src="{{ url_for('static', filename='imatges/' + prof['Imatge']) }}" alt="Foto de {{ prof['NomCognoms'] }}">
                 <div class="info">
                     <strong>{{ prof['NomCognoms'] }}</strong><br>
-                    <small style="color: gray;">{{ prof['Correu'] }}</small>
+                    <!-- <small style="color: gray;">{{ prof['Correu'] }}</small> -->
                 </div>
                 <div class="opcions">
                     <label>
@@ -45,5 +151,29 @@
         </form>
     </div>
 
+    <script>
+        const subjectFilter = document.getElementById('subjectFilter');
+        const sliderValue = document.getElementById('sliderValue');
+        const professorsList = document.querySelectorAll('.professor');
+
+        function filterProfessors() {
+            const minSubjects = parseInt(subjectFilter.value);
+            sliderValue.textContent = minSubjects;
+
+            professorsList.forEach(function(prof) {
+                const profSubjects = parseInt(prof.getAttribute('data-subjects')) || 0;
+                
+                if (profSubjects >= minSubjects) {
+                    prof.style.display = '';
+                } else {
+                    prof.style.display = 'none';
+                }
+            });
+        }
+
+        subjectFilter.addEventListener('input', filterProfessors);
+        
+        filterProfessors();
+    </script>
 </body>
 </html>
