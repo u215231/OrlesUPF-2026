@@ -45,39 +45,8 @@ if __name__ == "__main__":
         grau_assignatura_professor_df[grau] = (
             grau_assignatura_professor_df["GrauCodi"] == grau
         ).astype(int)
-    
-    # combinations_list = []
-    # for i in range(1, len(graus) + 1):
-    #     for combination_tuple in combinations(graus, i):
-    #         combination_str = "_".join(combination_tuple)
-    #         combinations_list.append(combination_str)
-    #         grau_assignatura_professor_df[combination_str] = 0
-    #         for grau in combination_tuple:
-    #             grau_assignatura_professor_df[combination_str] |= (
-    #                 grau_assignatura_professor_df["GrauCodi"] == grau
-    #             ).astype(int)        
 
     professor_degrees_df = pd.DataFrame(professor_df["ProfessorNom"])
-
-    # for i in range(1, len(graus) + 1):
-    #     for combination_tuple in combinations(graus, i):
-    #         combination_list = sorted(list(combination_tuple))
-    #         combination_str = "_".join(combination_list).lower()
-    #         mask = grau_assignatura_professor_df['GrauCodi'].isin(combination_list)
-    #         filtered_df = grau_assignatura_professor_df[mask]
-    #         counts = (
-    #             filtered_df
-    #             .groupby('ProfessorNom')['AssignaturaNom']
-    #             .nunique()
-    #             .reset_index()
-    #         )
-    #         counts.columns = ['ProfessorNom', combination_str]
-    #         professor_degrees_df = (
-    #             professor_degrees_df
-    #             .merge(counts, on='ProfessorNom', how='left')
-    #             .fillna(0)
-    #         )
-    #         professor_degrees_df[combination_str] = professor_degrees_df[combination_str].astype(int)
 
     for i in range(1, len(graus) + 1):
         for combination_tuple in combinations(graus, i):
@@ -104,12 +73,6 @@ if __name__ == "__main__":
             )
             
             professor_degrees_df[combination_str] = professor_degrees_df[combination_str].astype(int)
-
-    # professor_degrees_df = (
-    #     grau_assignatura_professor_df
-    #     .groupby("ProfessorNom", as_index=False)[combinations_list]
-    #     .sum()
-    # )
 
     professor_merged_df = (
         professor_degree_count_df

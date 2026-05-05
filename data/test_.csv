@@ -177,7 +177,7 @@ GrauAssignaturaID,AssignaturaNom,GrauCodi,ProfessorNom,AssignaturaProfessorPes,A
 30,Sistemes Distribuïts de Gran Escala,GEI,Miquel Vázquez Rius,2,2024,2004,1,0,0,0
 30,Sistemes Distribuïts de Gran Escala,GEI,Rahul Methari,1,2024,2004,1,0,0,0
 31,Criptografia i Seguretat,GEI,Vanesa Daza Fernández,2,2024,2004,1,0,0,0
-31,Criptografia i Seguretat,GEI,Núria Mirada Costa,1,2024,2004,1,0,0,0
+31,Criptografia i Seguretat,GEI,Núria Costa Mirada,1,2024,2004,1,0,0,0
 31,Criptografia i Seguretat,GEI,Carla Ràfols Salvador,2,2024,2004,1,0,0,0
 31,Criptografia i Seguretat,GEI,Nikitas Paslis,1,2024,2004,1,0,0,0
 31,Criptografia i Seguretat,GEI,Diego de Estrada Rustan,1,2024,2004,1,0,0,0
@@ -367,7 +367,7 @@ GrauAssignaturaID,AssignaturaNom,GrauCodi,ProfessorNom,AssignaturaProfessorPes,A
 78,Sistemes Distribuïts de Gran Escala,GEMCD,Miquel Vázquez Rius,2,2024,2004,0,1,0,0
 78,Sistemes Distribuïts de Gran Escala,GEMCD,Rahul Methari,1,2024,2004,0,1,0,0
 79,Criptografia i Seguretat,GEMCD,Vanesa Daza Fernández,2,2024,2004,0,1,0,0
-79,Criptografia i Seguretat,GEMCD,Núria Mirada Costa,1,2024,2004,0,1,0,0
+79,Criptografia i Seguretat,GEMCD,Núria Costa Mirada,1,2024,2004,0,1,0,0
 79,Criptografia i Seguretat,GEMCD,Carla Ràfols Salvador,2,2024,2004,0,1,0,0
 79,Criptografia i Seguretat,GEMCD,Nikitas Paslis,1,2024,2004,0,1,0,0
 79,Criptografia i Seguretat,GEMCD,Diego de Estrada Rustan,1,2024,2004,0,1,0,0
@@ -555,7 +555,7 @@ GrauAssignaturaID,AssignaturaNom,GrauCodi,ProfessorNom,AssignaturaProfessorPes,A
 126,Aplicacions Telemàtiques,GEXT,Davinia Hernández Leo,2,2024,2004,0,0,1,0
 126,Aplicacions Telemàtiques,GEXT,Daniel Esono Ferrer,2,2024,2004,0,0,1,0
 127,Criptografia i Seguretat,GEXT,Vanesa Daza Fernández,2,2024,2004,0,0,1,0
-127,Criptografia i Seguretat,GEXT,Núria Mirada Costa,1,2024,2004,0,0,1,0
+127,Criptografia i Seguretat,GEXT,Núria Costa Mirada,1,2024,2004,0,0,1,0
 127,Criptografia i Seguretat,GEXT,Carla Ràfols Salvador,2,2024,2004,0,0,1,0
 127,Criptografia i Seguretat,GEXT,Nikitas Paslis,1,2024,2004,0,0,1,0
 127,Criptografia i Seguretat,GEXT,Diego de Estrada Rustan,1,2024,2004,0,0,1,0

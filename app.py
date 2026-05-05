@@ -19,7 +19,7 @@ app = Flask(__name__)
 def generate_image_name(name: str) -> str:
     name = unicodedata.normalize('NFKD', name)
     name = name.encode('ASCII', 'ignore').decode('utf-8')
-    name = name.lower().replace(' ', '_') + '.jpg'    
+    name = name.lower().replace(' ', '_').replace('\'', '_') + '.jpg'    
     return name
 
 def read_teachers(
@@ -54,12 +54,16 @@ def index():
 def vote(
     teacher_key_name: str = "ProfessorNom",
     student_key_name: str = "EstudiantNom",
-    student_key_degree: str = "EstudiantGrau"
+    student_key_degree: str = "EstudiantGrau",
+    student_key_degree2: str = "EstudiantGrauComplementari",
+    student_key_suggestions: str = "EstudiantSuggeriment"
 ) -> str:
     teachers = read_teachers()
     teacher_names = [p[teacher_key_name] for p in teachers]
     student_name = request.form.get('nom_estudiant', '')
     student_degree = request.form.get('grau', '')
+    student_degree2 = request.form.get('grau2', '')
+    student_suggestions = request.form.get('suggeriments', '').replace('\n', ' ')
 
     votes = []
     for name in teacher_names:
@@ -70,9 +74,14 @@ def vote(
     with open(RESULTS_PATH, mode='a', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
         if not file_exists:
-            header = [student_key_name, student_key_degree] + teacher_names
+            header = [
+                student_key_name, 
+                student_key_degree, 
+                student_key_degree2,
+                student_key_suggestions,
+            ] + teacher_names
             writer.writerow(header)
-        student_row = [student_name, student_degree] + votes
+        student_row = [student_name, student_degree, student_degree2, student_suggestions] + votes
         writer.writerow(student_row)
     
     return RETURN_MESSAGE

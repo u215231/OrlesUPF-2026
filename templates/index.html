@@ -12,11 +12,12 @@
             padding: 20px; 
             background-color: #f9f9f9; 
         }
-        .caixa { 
+        .box { 
             background: white; 
             padding: 20px; 
             border-radius: 8px; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            /* border: 1px solid #999;  */
         }
         .professor { 
             border-bottom: 1px solid #eee; 
@@ -38,12 +39,12 @@
         .info { 
             flex-grow: 1; 
         }
-        /* .opcions input[type="radio"] {
+        /* .options input[type="radio"] {
             transform: scale(1.4); 
             margin-right: 8px;     
             cursor: pointer;
         } */
-        .btn-enviar { 
+        .btn-send { 
             margin-top: 20px; 
             padding: 12px 20px; 
             background-color: #28a745; 
@@ -54,7 +55,7 @@
             cursor: pointer; 
             width: 100%; 
         }
-        .btn-enviar:hover { 
+        .btn-send:hover { 
             background-color: #218838; 
         }
         .square-check {
@@ -62,7 +63,7 @@
             -webkit-appearance: none;
             width: 25px;
             height: 25px;
-            border: 2px solid #ccc;
+            border: 2px solid #aaa;
             border-radius: 4px;
             background-color: white;
             cursor: pointer;
@@ -82,7 +83,7 @@
             left: 5px;
             top: -2px;
         }
-        .opcions {
+        .options {
             display: flex;
             align-items: center;
         }
@@ -92,13 +93,11 @@
             margin-bottom: 20px;
             flex-wrap: wrap;
         }
-
         .degree-option {
             display: flex;
             align-items: center;
             gap: 8px;
         }
-
         .degree-option label {
             font-size: 14px;
             font-weight: bold;
@@ -110,7 +109,7 @@
                 grid-template-columns: 80px 1fr;
                 grid-template-areas: 
                     "foto info"
-                    "foto opcions";
+                    "foto options";
                 column-gap: 20px;
                 row-gap: 10px;     
                 align-items: center;
@@ -124,8 +123,8 @@
                 width: 100%;
                 align-self: end;
             }
-            .opcions {
-                grid-area: opcions;
+            .options {
+                grid-area: options;
                 width: 100%;
                 display: flex;
                 justify-content: flex-start;
@@ -134,56 +133,62 @@
                 box-sizing: border-box;
             }
         }
-        /* @media (max-width: 600px) {
-            .professor {
-                display: grid;
-                grid-template-columns: 80px 1fr;
-                grid-template-areas: 
-                    "foto info"
-                    "foto opcions";
-                column-gap: 20px;
-                row-gap: 10px;     
-                align-items: center;
-            }
-            .professor img {
-                grid-area: foto;
-                margin-right: 0; 
-            }
-            .info {
-                grid-area: info;
-                width: 100%;
-                align-self: end;
-            }
-            .opcions {
-                grid-area: opcions;
-                width: 100%;
-                padding-left: 0;
-                margin-top: 0px;
-                justify-content: flex-end;
-                align-self: start
-            } */
-            /* .opcions {
-                justify-content: flex-end;
-                width: 100%;
-            }
-            .square-check {
-                width: 35px;
-                height: 35px;
-            } */
-        select:invalid {
+        /* select:invalid {
+            color: #757575;
+        } */
+        /* select option {
+            color: #000000;
+        } */
+        select {
             color: #757575;
         }
-        select option {
-            color: #000000;
+        input[type="text"], 
+        select, 
+        textarea {
+            width: 100%;
+            padding: 10px;
+        
+            border: 1px solid #888; 
+            border-radius: 4px;
+            box-sizing: border-box; 
+            font-size: 16px;
+            margin-bottom: 15px;
+            background-color: white;
+            font-family: inherit; 
+        }
+
+        input[type="text"]:focus, 
+        select:focus, 
+        textarea:focus {
+            outline: none;
+            border-color: #4CAF50; 
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.2);
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #888; /* Contorn més fosc com els altres camps */
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+            min-height: 100px;      /* Alçada mínima perquè sigui més llarg */
+            font-family: inherit;   /* Perquè no surti la lletra "Courier" per defecte */
+            resize: vertical;       /* Permet a l'usuari fer-lo més gran però no més ample */
+            margin-bottom: 20px;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.2);
         }
     </style>
 </head>
 <body>
 
-    <div class="caixa">
+    <div class="box">
         <h2>Orla Enginyeries TIC 2025-26</h2>
         <p>Vols que aquest professor aparegui a la llista dels professors de l'orla d'aquest any?</p>
-        <p style="color: gray;">
+        <p>
             Marca amb <b>Sí</b> si vols que el professor hi aparagui. 
             Qualsevol casella no marcada comptarà automàticament com un <b>No</b>.
             Les preguntes marcades amb <b>*</b> són obligatòries.
@@ -194,18 +199,14 @@
                 <label for="nom_estudiant" style="font-weight: bold; display: block; margin-bottom: 8px;">
                     Els teu noms i cognoms:<span style="color: red;">*</span>
                 </label>
-                <input 
-                    type="text" 
-                    id="nom_estudiant" 
-                    name="nom_estudiant" 
-                    required placeholder="Escriu aquí el teu nom..." 
-                    style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; margin-bottom: 15px;"
-                >
+                <input type="text" id="nom_estudiant" name="nom_estudiant" required placeholder="Escriu aquí el teu nom..." >
+                <!-- style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; margin-bottom: 15px;" -->
                 
                 <label for="grau" style="font-weight: bold; display: block; margin-bottom: 8px;">
-                    El teu grau:<span style="color: red;">*</span>
+                    Selecciona el teu grau:<span style="color: red;">*</span>
                 </label>
-                <select id="grau" name="grau" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; background-color: white;">
+                <!-- style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; background-color: white;" -->
+                <select id="grau" name="grau" required >
                     <option value="" disabled selected style="display: none;">Selecciona el teu grau...</option>
                     <option value="GEI">GEI</option>
                     <option value="GESA">GESA</option>
@@ -213,12 +214,25 @@
                     <option value="GEXT">GEXT</option>
                 </select>
 
+                <label for="grau2" style="font-weight: bold; display: block; margin-bottom: 8px;">
+                    Selecciona el teu segon grau: <span style="color: gray;">(només per estudiants de doble grau)</span>
+                </label>
+                <select id="grau2" name="grau2" >
+                    <option value="" disabled selected style="display: none;">Selecciona el teu segon grau...</option>
+                    <option value="GEI">GEI</option>
+                    <option value="GESA">GESA</option>
+                    <option value="GEMCD">GEMCD</option>
+                    <option value="GEXT">GEXT</option>
+                </select>
+
                 <label for="subjectFilter" style="font-weight: bold; display: block; margin-top: 15px; margin-bottom: 8px;">
-                    Professors seleccionats: <span id="sliderValue">0</span>
+                    Professors mostrats: <span id="sliderValue">0</span>
                 </label>
                 <input type="range" id="subjectFilter" min="1" max="6" step="1" value="3" style="width: 100%;">
 
-                <label style="font-weight: bold; display: block; margin-top: 15px; margin-bottom: 8px;">Filter by degree:</label>
+                <label style="font-weight: bold; display: block; margin-top: 15px; margin-bottom: 8px;">
+                    Filtra per grau:
+                </label>
 
                 <div class="degree-selector">
                     <div class="degree-option">
@@ -240,214 +254,131 @@
                 </div>
             </div>
             
-            {% for prof in professors %}
-            <div class="professor" 
-                data-subjects="{{ prof['AssignaturaProfessorPes'] }}"
-                data-gei="{{ prof['gei'] }}" 
-                data-gemcd="{{ prof['gemcd'] }}" 
-                data-gext="{{ prof['gext'] }}" 
-                data-gesa="{{ prof['gesa'] }}"
-                data-gei_gemcd="{{ prof['gei_gemcd'] }}"
-                data-gei_gext="{{ prof['gei_gext'] }}"
-                data-gei_gesa="{{ prof['gei_gesa'] }}"
-                data-gemcd_gext="{{ prof['gemcd_gext'] }}"
-                data-gemcd_gesa="{{ prof['gemcd_gesa'] }}"
-                data-gesa_gext="{{ prof['gesa_gext'] }}"
-                data-gei_gemcd_gext="{{ prof['gei_gemcd_gext'] }}"
-                data-gei_gemcd_gesa="{{ prof['gei_gemcd_gesa'] }}"
-                data-gei_gesa_gext="{{ prof['gei_gesa_gext'] }}"
-                data-gemcd_gesa_gext="{{ prof['gemcd_gesa_gext'] }}"
-                data-gei_gemcd_gesa_gext="{{ prof['gei_gemcd_gesa_gext'] }}"
-                data-current-score="0"
-            >
-            <!-- <div class="professor" 
-                {% for clau in claus %}
-                data-{{ clau }}="{{ prof[clau] }}"
+            <div id="professors-container" class="professors-box">
+                {% for prof in professors %}
+                <div class="professor" 
+                    data-subjects="{{ prof['AssignaturaProfessorPes'] }}"
+                    data-gei="{{ prof['gei'] }}" 
+                    data-gemcd="{{ prof['gemcd'] }}" 
+                    data-gext="{{ prof['gext'] }}" 
+                    data-gesa="{{ prof['gesa'] }}"
+                    data-gei_gemcd="{{ prof['gei_gemcd'] }}"
+                    data-gei_gext="{{ prof['gei_gext'] }}"
+                    data-gei_gesa="{{ prof['gei_gesa'] }}"
+                    data-gemcd_gext="{{ prof['gemcd_gext'] }}"
+                    data-gemcd_gesa="{{ prof['gemcd_gesa'] }}"
+                    data-gesa_gext="{{ prof['gesa_gext'] }}"
+                    data-gei_gemcd_gext="{{ prof['gei_gemcd_gext'] }}"
+                    data-gei_gemcd_gesa="{{ prof['gei_gemcd_gesa'] }}"
+                    data-gei_gesa_gext="{{ prof['gei_gesa_gext'] }}"
+                    data-gemcd_gesa_gext="{{ prof['gemcd_gesa_gext'] }}"
+                    data-gei_gemcd_gesa_gext="{{ prof['gei_gemcd_gesa_gext'] }}"
+                    data-current-score="0"
+                >
+                <!-- <div class="professor" 
+                    {% for clau in claus %}
+                    data-{{ clau }}="{{ prof[clau] }}"
+                    {% endfor %}
+                    data-current-score="0" 
+                > -->
+                    <img src="{{ url_for('static', filename='imatges/' + prof['Imatge']) }}" alt="Foto de {{ prof['ProfessorNom'] }}">
+                    <div class="info">
+                        <strong>{{ prof['ProfessorNom'] }}</strong><br>
+                        <!-- <small style="color: gray;">{{ prof['ProfessorCorreu'] }}</small> -->
+                    </div>
+                    <div class="options">
+                        <input type="hidden" name="{{ prof['ProfessorNom'] }}" value="0">
+                        <input type="checkbox" name="{{ prof['ProfessorNom'] }}" value="1" class="square-check">
+                    </div>
+                </div>
                 {% endfor %}
-                data-current-score="0" 
-            > -->
-                <img src="{{ url_for('static', filename='imatges/' + prof['Imatge']) }}" alt="Foto de {{ prof['ProfessorNom'] }}">
-                <div class="info">
-                    <strong>{{ prof['ProfessorNom'] }}</strong><br>
-                    <!-- <small style="color: gray;">{{ prof['ProfessorCorreu'] }}</small> -->
-                </div>
-                <div class="opcions">
-                    <input type="hidden" name="{{ prof['ProfessorNom'] }}" value="0">
-                    <input type="checkbox" name="{{ prof['ProfessorNom'] }}" value="1" class="square-check">
-                </div>
             </div>
-            {% endfor %}
-            
-            <button type="submit" class="btn-enviar">Confirmar Votació</button>
+            <div id="suggestions-box" style="margin-top: 30px; margin-bottom: 20px;">
+                <label for="suggeriments" style="font-weight: bold; display: block; margin-bottom: 8px;">
+                    Suggeriments o comentaris addicionals:
+                </label>
+                <textarea 
+                    id="suggeriments" 
+                    name="suggeriments" 
+                    placeholder="Si trobes que falta algun professor o vols dir alguna cosa, escriu-ho aquí..." 
+                ></textarea>
+
+            </div>
+            <button type="submit" class="btn-send">Confirmar Votació</button>
         </form>
     </div>
 
-    <!-- <script>
+    <script>
         const subjectFilter = document.getElementById('subjectFilter');
-        const sliderValue = document.getElementById('sliderValue');
+        const sliderValueDisplay = document.getElementById('sliderValue');
         const degreeCheckboxes = document.querySelectorAll('.degree-checkbox');
         const professorsList = document.querySelectorAll('.professor');
+        const professorsContainer = document.getElementById('professors-container');
+        const submitButton = document.querySelector('.btn-send');
+        const suggestionsBox = document.getElementById('suggestions-box');
+        // const professorsContainer = document.querySelector('.box'); 
 
-        function filterProfessors() {
-            const minSubjects = parseInt(subjectFilter.value);
+        function filterAndSortProfessors() {
+            const minWeight = parseInt(subjectFilter.value);
+            
             const activeDegrees = Array.from(degreeCheckboxes)
-                .filter(checkbox => checkbox.checked)
-                .map(checkbox => checkbox.value);
+                .filter(cb => cb.checked)
+                .map(cb => cb.value.toLowerCase())
+                .sort();
+
+            let combinationKey;
+            if (activeDegrees.length > 0) {
+                combinationKey = activeDegrees.join('_');
+            } else {
+                combinationKey = "gei_gemcd_gesa_gext"; 
+            }
 
             let visibleCount = 0;
 
             professorsList.forEach(function(prof) {
-                const profSubjects = parseInt(prof.getAttribute('data-subjects')) || 0;
-                const matchesSlider = profSubjects >= minSubjects;
-                
-                let matchesDegree = true;
-                if (activeDegrees.length > 0) {
-                    matchesDegree = activeDegrees.some(degree => {
-                        const value = parseInt(prof.getAttribute('data-' + degree)) || 0;
-                        return value > 0;
-                    });
-                }
-
-                if (matchesSlider && matchesDegree) {
-                    prof.style.display = '';
+                const score = parseInt(prof.getAttribute('data-' + combinationKey)) || 0;
+                prof.setAttribute('data-current-score', score);
+                const countSpan = prof.querySelector('.current-count');
+                if (countSpan) 
+                    countSpan.textContent = score;
+                if (score >= minWeight && score > 0) {
+                    prof.style.display = 'flex';
                     visibleCount++;
                 } else {
                     prof.style.display = 'none';
                 }
             });
 
-            sliderValue.textContent = visibleCount;
+            // const sortedProfessors = Array.from(professorsList).sort((a, b) => {
+            //     const scoreA = parseInt(a.getAttribute('data-current-score')) || 0;
+            //     const scoreB = parseInt(b.getAttribute('data-current-score')) || 0;
+            //     return scoreB - scoreA;
+            // });
+
+            const sortedProfessors = Array.from(professorsList).sort((a, b) => {
+                const nameA = a.querySelector('strong').textContent.trim().toLowerCase();
+                const nameB = b.querySelector('strong').textContent.trim().toLowerCase();
+                return nameA.localeCompare(nameB, 'ca', { sensitivity: 'base' });
+            });
+
+            sortedProfessors.forEach(prof => professorsContainer.appendChild(prof));
+            
+            if (suggestionsBox) 
+                professorsContainer.appendChild(suggestionsBox);
+
+            if (submitButton)
+                professorsContainer.appendChild(submitButton);
+
+            sliderValueDisplay.textContent = visibleCount;
         }
 
-        subjectFilter.addEventListener('input', filterProfessors);
+        subjectFilter.addEventListener('input', filterAndSortProfessors);
         degreeCheckboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', filterProfessors);
+            checkbox.addEventListener('change', filterAndSortProfessors);
         });
         
-        filterProfessors();
-    </script> -->
 
-    <script>
-    const subjectFilter = document.getElementById('subjectFilter');
-    const sliderValueDisplay = document.getElementById('sliderValue');
-    const degreeCheckboxes = document.querySelectorAll('.degree-checkbox');
-    const professorsList = document.querySelectorAll('.professor');
-    const professorsContainer = document.querySelector('.caixa'); // El pare que conté els divs dels profes
-
-    function filterAndSortProfessors() {
-    const minWeight = parseInt(subjectFilter.value);
-    
-    // 1. Obtenim els graus seleccionats
-    const activeDegrees = Array.from(degreeCheckboxes)
-        .filter(cb => cb.checked)
-        .map(cb => cb.value.toLowerCase())
-        .sort();
-
-    // 2. LÒGICA DINÀMICA: Si no hi ha res marcat, usem la unió total
-    // Si hi ha graus marcats, muntem la clau (ex: gei_gesa)
-    let combinationKey;
-    if (activeDegrees.length > 0) {
-        combinationKey = activeDegrees.join('_');
-    } else {
-        // Aquesta és la clau que representa "Tots els graus"
-        combinationKey = "gei_gemcd_gesa_gext"; 
-    }
-
-    let visibleCount = 0;
-
-    professorsList.forEach(function(prof) {
-        // 3. Llegim el valor de la combinació corresponent
-        const score = parseInt(prof.getAttribute('data-' + combinationKey)) || 0;
-        
-        // Guardem la puntuació actual per a l'ordre
-        prof.setAttribute('data-current-score', score);
-        
-        // Actualitzem el comptador visual per a l'usuari
-        const countSpan = prof.querySelector('.current-count');
-        if (countSpan) countSpan.textContent = score;
-
-        // 4. Filtre: el pes ha de ser >= al de l'slider
-        // (Nota: score > 0 assegura que no mostrem professors amb 0 assignatures)
-        if (score >= minWeight && score > 0) {
-            prof.style.display = 'flex';
-            visibleCount++;
-        } else {
-            prof.style.display = 'none';
-        }
-    });
-
-    // 5. Reordenar els professors al DOM segons la popularitat actual
-    // const sortedProfessors = Array.from(professorsList).sort((a, b) => {
-    //     const scoreA = parseInt(a.getAttribute('data-current-score')) || 0;
-    //     const scoreB = parseInt(b.getAttribute('data-current-score')) || 0;
-    //     return scoreB - scoreA;
-    // });
-
-    // Reordenem alfabèticament
-    const sortedProfessors = Array.from(professorsList).sort((a, b) => {
-        const nameA = a.querySelector('strong').textContent.trim().toLowerCase();
-        const nameB = b.querySelector('strong').textContent.trim().toLowerCase();
-        return nameA.localeCompare(nameB, 'ca', { sensitivity: 'base' });
-    });
-
-    sortedProfessors.forEach(prof => professorsContainer.appendChild(prof));
-
-    sliderValueDisplay.textContent = visibleCount;
-}
-    // function filterAndSortProfessors() {
-    //     const minWeight = parseInt(subjectFilter.value);
-        
-    //     // 1. Agafem els graus marcats, els passem a minúscules i els ORDENEM alfabèticament
-    //     const activeDegrees = Array.from(degreeCheckboxes)
-    //         .filter(cb => cb.checked)
-    //         .map(cb => cb.value.toLowerCase())
-    //         .sort();
-
-    //     // 2. Determinem quina clau de combinació hem de llegir
-    //     // Si no hi ha res marcat, usem el total de tots (o pots posar una clau buida)
-    //     let combinationKey = activeDegrees.length > 0 
-    //         ? activeDegrees.join('_') 
-    //         : "gei_gemcd_gext_gesa"; // Per defecte mostra la unió de tots
-
-    //     let visibleCount = 0;
-
-    //     // 3. Primer filtrat i assignació de puntuació actual
-    //     professorsList.forEach(function(prof) {
-    //         // Llegim el valor precalculat al Python de la columna corresponent
-    //         const score = parseInt(prof.getAttribute('data-' + combinationKey)) || 0;
-            
-    //         // Guardem el score actual per poder ordenar després
-    //         prof.setAttribute('data-current-score', score);
-
-    //         // Filtrem: ha de superar el mínim de l'slider i ser > 0
-    //         if (score >= minWeight && score > 0) {
-    //             prof.style.display = ''; // Mostra
-    //             visibleCount++;
-    //         } else {
-    //             prof.style.display = 'none'; // Amaga
-    //         }
-    //     });
-
-    //     // 4. Reordenació física (Sort) basada en la puntuació de la combinació actual
-    //     const sortedProfessors = Array.from(professorsList).sort((a, b) => {
-    //         const scoreA = parseInt(a.getAttribute('data-current-score')) || 0;
-    //         const scoreB = parseInt(b.getAttribute('data-current-score')) || 0;
-    //         return scoreB - scoreA; // De més popular a menys
-    //     });
-
-    //     // Tornem a afegir els elements ordenats al contenidor
-    //     sortedProfessors.forEach(prof => professorsContainer.appendChild(prof));
-
-    //     sliderValueDisplay.textContent = visibleCount;
-    // }
-
-    subjectFilter.addEventListener('input', filterAndSortProfessors);
-    degreeCheckboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', filterAndSortProfessors);
-    });
-    
-    // Executem un cop al carregar
-    filterAndSortProfessors();
-</script>
+        filterAndSortProfessors();
+    </script>
 </body>
 </html>
