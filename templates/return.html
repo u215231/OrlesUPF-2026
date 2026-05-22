@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Votació Registrada - Orla 2025-26</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: auto; 
+            padding: 20px; 
+            background-color: #f9f9f9; 
+            /* Centrem el contingut verticalment a la pantalla */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 90vh;
+        }
+        .box { 
+            background: white; 
+            padding: 40px 20px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 500px;
+            position: relative; /* CRITICAL: Permet posicionar el logo a dins */
+        }
+
+        /* La mateixa classe del logo */
+        .logo-web {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 120px;
+            height: auto;
+            object-fit: contain;
+        }
+        
+        h1 {
+            color: #28a745; /* El mateix verd d'èxit del botó d'enviar */
+            margin-bottom: 15px;
+            font-size: 28px;
+        }
+        p {
+            color: #333;
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 30px;
+        }
+        .btn-tornar { 
+            display: inline-block;
+            text-decoration: none;
+            padding: 12px 24px; 
+            background-color: #4CAF50; /* Verd de l'entorn actiu */
+            color: white; 
+            border: none; 
+            border-radius: 4px; 
+            font-size: 16px; 
+            cursor: pointer; 
+            transition: background-color 0.2s;
+        }
+        .btn-tornar:hover { 
+            background-color: #439a46; 
+        }
+        /* Icona de verificació animada o estàtica estil l'index */
+        .success-icon {
+            font-size: 50px;
+            color: white;
+            background-color: #28a745;
+            width: 80px;
+            height: 80px;
+            line-height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 20px auto;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <img src="{{ url_for('static', filename='upf_logo_red_text_transparent_background.png') }}" alt="Logo Corporatiu" class="logo-web">
+
+    <div class="box">
+        <div class="success-icon">✔</div>
+        <h1>Gràcies per la teva votació!</h1>
+        <p>El teu vot s'ha registrat correctament a la base de dades del sistema.</p>
+        
+        <a href="/" class="btn-tornar">Tornar a l'inici</a>
+    </div>
+
+</body>
+</html>

@@ -5,11 +5,15 @@ import json
 from common import *
 import flask
 
-TEMPLATE_NAME = "index.html"
+INDEX_TEMPLATE = "index.html"
+RETURN_TEMPLATE = "return.html"
 DEFAULT_IMAGE = "default.jpg"
 RETURN_MESSAGE = \
     "<h1>Gràcies per la teva votació!</h1>"\
     "<p>El teu vot s'ha registrat correctament.</p>"
+BAD_RETURN = \
+    "<h1>MODE variable not set: .json or .csv</h1>"\
+    "<p>Contact with the programmer of this web: +34 605 17 19 65</p>"
 
 app = flask.Flask(__name__)
 
@@ -52,7 +56,7 @@ def index():
     teachers = read_teachers()
     keys = list(teachers[0].keys())
     return flask.render_template(
-        template_name_or_list=TEMPLATE_NAME, 
+        template_name_or_list=INDEX_TEMPLATE, 
         professors=teachers, 
         keys=keys
     )
@@ -70,7 +74,7 @@ if MODE == ".json":
         votes.append(dict(flask.request.form))
         with open(RESULTS_PATH, mode='w', encoding='utf-8') as f:
             json.dump(votes, f, ensure_ascii=False, indent=4)
-        return RETURN_MESSAGE
+        return flask.render_template('return.html')
 
 elif MODE == ".csv":
     @app.route('/votar', methods=['POST'])
@@ -115,12 +119,12 @@ elif MODE == ".csv":
             ] + votes
             writer.writerow(student_row)
         
-        return RETURN_MESSAGE
+        return flask.render_template('return.html')
 
 else:
     @app.route('/votar', methods=['POST'])
     def vote() -> str:
-        return RETURN_MESSAGE
+        return BAD_RETURN 
 
 if __name__ == '__main__':
     app.run(debug=True)
