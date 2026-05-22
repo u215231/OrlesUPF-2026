@@ -33,7 +33,7 @@
             position: absolute;
             top: 15px;      /* Distància respecte a dalt */
             right: 15px;    /* Distància respecte a la dreta */
-            width: 120px;    /* Mida en petit (ajusta-ho si és necessari) */
+            width: 60px;    /* Mida en petit (ajusta-ho si és necessari) */
             height: auto;   /* Manté la proporció de la imatge */
             object-fit: contain;
         }
@@ -260,12 +260,13 @@
     </style>
 </head>
 <body>
-    <img 
-            src="{{ url_for('static', filename='upf_logo_red_text_transparent_background.png') }}" 
+
+    <div class="box">
+        <img 
+            src="{{ url_for('static', filename='upf_logo_red_text_transparent_background_no_text.png') }}" 
             alt="Logo Corporatiu" 
             class="logo-web"
         >
-    <div class="box">
         
         <h2>Orla Enginyeries TIC 2025-26</h2>
         <p>Vols que aquest professor aparegui a la llista dels professors de l'orla d'aquest any?</p>
