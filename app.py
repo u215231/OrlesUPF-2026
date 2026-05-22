@@ -1,20 +1,23 @@
-from flask import Flask, render_template, request
-import csv
 import os
+import csv
 import unicodedata
+import json
+from common import *
+import flask
 
-BASE_DIR = os.path.dirname(__file__)
-
-TEACHERS_PATH = os.path.join(BASE_DIR, "data/professors.csv")
-RESULTS_PATH = os.path.join(BASE_DIR, "data/resultats.csv")
-IMAGES_DIR =  os.path.join(BASE_DIR, "static/imatges")
 TEMPLATE_NAME = "index.html"
 DEFAULT_IMAGE = "default.jpg"
 RETURN_MESSAGE = \
     "<h1>Gràcies per la teva votació!</h1>"\
     "<p>El teu vot s'ha registrat correctament.</p>"
 
-app = Flask(__name__)
+app = flask.Flask(__name__)
+
+def safe_int(value):
+    try:
+        return int(value)
+    except (ValueError, TypeError):
+        return value
 
 def generate_image_name(name: str) -> str:
     name = unicodedata.normalize('NFKD', name)
@@ -24,7 +27,7 @@ def generate_image_name(name: str) -> str:
 
 def read_teachers(
     path: str = TEACHERS_PATH,
-    key: str = "ProfessorNom",
+    key: str = PROFESSOR_NAME,
     image: str = "Imatge"
 ) -> list[dict]:
     teachers = []
@@ -48,43 +51,76 @@ def read_teachers(
 def index():
     teachers = read_teachers()
     keys = list(teachers[0].keys())
-    return render_template(TEMPLATE_NAME, professors=teachers, keys=keys)
+    return flask.render_template(
+        template_name_or_list=TEMPLATE_NAME, 
+        professors=teachers, 
+        keys=keys
+    )
 
-@app.route('/votar', methods=['POST'])
-def vote(
-    teacher_key_name: str = "ProfessorNom",
-    student_key_name: str = "EstudiantNom",
-    student_key_degree: str = "EstudiantGrau",
-    student_key_degree2: str = "EstudiantGrauComplementari",
-    student_key_suggestions: str = "EstudiantSuggeriment"
-) -> str:
-    teachers = read_teachers()
-    teacher_names = [p[teacher_key_name] for p in teachers]
-    student_name = request.form.get('nom_estudiant', '')
-    student_degree = request.form.get('grau', '')
-    student_degree2 = request.form.get('grau2', '')
-    student_suggestions = request.form.get('suggeriments', '').replace('\n', ' ')
+if MODE == ".json":
+    @app.route('/votar', methods=['POST'])
+    def vote() -> str:   
+        votes = []
+        if RESULTS_PATH.exists():
+            with open(RESULTS_PATH, mode='r', encoding='utf-8') as f:
+                try:
+                    votes = json.load(f)
+                except json.JSONDecodeError:
+                    pass
+        votes.append(dict(flask.request.form))
+        with open(RESULTS_PATH, mode='w', encoding='utf-8') as f:
+            json.dump(votes, f, ensure_ascii=False, indent=4)
+        return RETURN_MESSAGE
 
-    votes = []
-    for name in teacher_names:
-        vote = request.form.get(name, '0') 
-        votes.append(vote)
-    
-    file_exists = os.path.isfile(RESULTS_PATH)
-    with open(RESULTS_PATH, mode='a', newline='', encoding='utf-8') as file:
-        writer = csv.writer(file)
-        if not file_exists:
-            header = [
-                student_key_name, 
-                student_key_degree, 
-                student_key_degree2,
-                student_key_suggestions,
-            ] + teacher_names
-            writer.writerow(header)
-        student_row = [student_name, student_degree, student_degree2, student_suggestions] + votes
-        writer.writerow(student_row)
-    
-    return RETURN_MESSAGE
+elif MODE == ".csv":
+    @app.route('/votar', methods=['POST'])
+    def vote(
+        teacher_key_name: str = PROFESSOR_NAME,
+        student_key_name: str = STUDENT_NAME,
+        student_key_degree: str = "EstudiantGrau",
+        student_key_degree2: str = "EstudiantGrauComplementari",
+        student_key_suggestions: str = "EstudiantSuggeriment"
+    ) -> str:
+        teachers = read_teachers()
+        teacher_names = [p[teacher_key_name] for p in teachers]
+        student_name = flask.request.form.get('nom_estudiant', '')
+        student_degree = flask.request.form.get('grau', '')
+        student_degree2 = flask.request.form.get('grau2', '')
+        student_suggestions = flask.request.form\
+            .get('suggeriments', '')\
+            .replace('\n', ' ')
+        
+        votes = []
+
+        for name in teacher_names:
+            vote = flask.request.form.get(name, '0') 
+            votes.append(vote)
+        
+        file_exists = os.path.isfile(RESULTS_PATH)
+        with open(RESULTS_PATH, mode='a', newline='', encoding='utf-8') as f:
+            writer = csv.writer(f)
+            if not file_exists:
+                header = [
+                    student_key_name, 
+                    student_key_degree, 
+                    student_key_degree2,
+                    student_key_suggestions,
+                ] + teacher_names
+                writer.writerow(header)
+            student_row = [
+                student_name, 
+                student_degree, 
+                student_degree2, 
+                student_suggestions
+            ] + votes
+            writer.writerow(student_row)
+        
+        return RETURN_MESSAGE
+
+else:
+    @app.route('/votar', methods=['POST'])
+    def vote() -> str:
+        return RETURN_MESSAGE
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,85 +1,105 @@
 import pandas as pd
-import os
 from itertools import combinations
-
-BASE_DIR = os.path.dirname(__file__)
-DATABASE_PATH = os.path.join(BASE_DIR, "data/professors.xlsx")
-TEACHERS_PATH = os.path.join(BASE_DIR, "data/professors.csv")
-TEST_PATH = os.path.join(BASE_DIR, "data/test_.csv")
+from common import *
 
 if __name__ == "__main__":
-    grau_df = pd.read_excel(DATABASE_PATH, "Grau")
-    grau_assignatura_df = pd.read_excel(DATABASE_PATH, "GrauAssignatura")
-    assignatura_df = pd.read_excel(DATABASE_PATH, "Assignatura")
-    assignatura_professor_df = pd.read_excel(DATABASE_PATH, "AssignaturaProfessor")
-    professor_df = pd.read_excel(DATABASE_PATH, "Professor")
+    # degree_df = pd.read_excel(DATABASE_PATH, "Grau")
+    degree_subject_df = pd.read_excel(DATABASE_PATH, "GrauAssignatura")
+    # subject_df = pd.read_excel(DATABASE_PATH, "Assignatura")
+    subject_teacher_df = pd.read_excel(DATABASE_PATH, "AssignaturaProfessor")
+    teacher_df = pd.read_excel(DATABASE_PATH, "Professor")
 
-    grau_assignatura_professor_df = pd.merge(
-        grau_assignatura_df,
-        assignatura_professor_df,
+    degree_subject_teacher_df = pd.merge(
+        degree_subject_df,
+        subject_teacher_df,
+        how='right'
     )
 
-    professor_subject_count_df = (
-        assignatura_professor_df
-        .groupby("ProfessorNom", as_index=False)
+    subject_teacher_count_df = (
+        subject_teacher_df
+        .groupby(PROFESSOR_NAME, as_index=False)
         .size()
         .rename(columns={"size": "ProfessorQuantitatAssignatures"})
     )
 
-    professor_subject_ponderation_df = (
-        assignatura_professor_df
-        .groupby("ProfessorNom", as_index=False)["AssignaturaProfessorPes"]\
+    subject_teacher_df["Coordinador"] = subject_teacher_df["AssignaturaNom"].str.startswith("Coordinador")
+    subject_teacher_df["Tutor"] = subject_teacher_df["AssignaturaNom"].str.startswith("Tutor")
+
+    subject_teacher_coordinator_df = (
+        subject_teacher_df
+        .groupby(PROFESSOR_NAME, as_index=False)["Coordinador"]
+        .any()
+        .astype({"Coordinador": int})
+    )
+    
+    subject_teacher_tutor_df = (
+        subject_teacher_df
+        .groupby(PROFESSOR_NAME, as_index=False)["Tutor"]
+        .any()
+        .astype({"Tutor": int})
+    )
+
+    subject_teacher_ponderation_df = (
+        subject_teacher_df
+        .groupby(PROFESSOR_NAME, as_index=False)["AssignaturaProfessorPes"]
         .sum()
     )
 
-    professor_degree_count_df = (
-        grau_assignatura_professor_df[["GrauCodi", "ProfessorNom"]]
+    degree_teacher_count_df = (
+        degree_subject_teacher_df[["GrauCodi", PROFESSOR_NAME]]
         .drop_duplicates()
-        .groupby("ProfessorNom", as_index=False)
+        .groupby(PROFESSOR_NAME, as_index=False)
         .size()
         .rename(columns={"size": "ProfessorQuantitatGraus"})
     )
 
-    graus = list(grau_assignatura_professor_df["GrauCodi"].unique())
-    for grau in graus:
-        grau_assignatura_professor_df[grau] = (
-            grau_assignatura_professor_df["GrauCodi"] == grau
+    degrees = list(degree_subject_teacher_df["GrauCodi"].unique())
+    for degree in degrees:
+        degree_subject_teacher_df[degree] = (
+            degree_subject_teacher_df["GrauCodi"] == degree
         ).astype(int)
 
-    professor_degrees_df = pd.DataFrame(professor_df["ProfessorNom"])
+    professor_degrees_df = pd.DataFrame(teacher_df[[PROFESSOR_NAME, "Dona"]])
 
-    for i in range(1, len(graus) + 1):
-        for combination_tuple in combinations(graus, i):
-            combination_list = sorted(list(combination_tuple))
-            combination_str = "_".join(combination_list).lower()
+    degrees_not_na = [d for d in degrees if isinstance(d, str)]
+    num_degress_not_na = len(degrees_not_na)
+
+    for i in range(1, num_degress_not_na + 1):
+        for degree_combination_tuple in combinations(degrees_not_na, i):
+            degree_combination_list = sorted(degree_combination_tuple)
+            degree_combination_str = "_".join(degree_combination_list).lower()
             
-            mask = grau_assignatura_professor_df['GrauCodi'].isin(combination_list)
-            filtered_df = grau_assignatura_professor_df[mask]
-            
-            unique_assignments = filtered_df.drop_duplicates(subset=['ProfessorNom', 'AssignaturaNom'])
-            
+            isin_degree_combination = (
+                degree_subject_teacher_df['GrauCodi']
+                .isin(degree_combination_list)
+            )
+
             counts = (
-                unique_assignments
+                degree_subject_teacher_df[isin_degree_combination]
+                .drop_duplicates(subset=[PROFESSOR_NAME, 'AssignaturaNom'])
                 .groupby('ProfessorNom')['AssignaturaProfessorPes']
                 .sum()
                 .reset_index()
             )
             
-            counts.columns = ['ProfessorNom', combination_str]
+            counts.columns = [PROFESSOR_NAME, degree_combination_str]
             professor_degrees_df = (
                 professor_degrees_df
-                .merge(counts, on='ProfessorNom', how='left')
+                .merge(counts, on=PROFESSOR_NAME, how='left')
                 .fillna(0)
             )
             
-            professor_degrees_df[combination_str] = professor_degrees_df[combination_str].astype(int)
+            professor_degrees_df[degree_combination_str] = (
+                professor_degrees_df[degree_combination_str].astype(int)
+            )
 
     professor_merged_df = (
-        professor_degree_count_df
-        .merge(professor_subject_count_df)
-        .merge(professor_subject_ponderation_df)
+        degree_teacher_count_df
+        .merge(subject_teacher_count_df)
+        .merge(subject_teacher_ponderation_df)
         .merge(professor_degrees_df)
+        .merge(subject_teacher_coordinator_df)
+        .merge(subject_teacher_tutor_df)
     )
 
     professor_merged_df.to_csv(TEACHERS_PATH, index=False)
-    grau_assignatura_professor_df.to_csv(TEST_PATH, index=False)

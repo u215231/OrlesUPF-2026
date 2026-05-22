@@ -35,6 +35,7 @@
             border-radius: 50%; 
             margin-right: 20px; 
             border: 1px solid #ccc; 
+            box-sizing: border-box;
         }
         .info { 
             flex-grow: 1; 
@@ -103,7 +104,7 @@
             font-weight: bold;
             cursor: pointer;
         }
-        @media (max-width: 600px) {
+        /* @media (max-width: 600px) {
             .professor {
                 display: grid;
                 grid-template-columns: 80px 1fr;
@@ -130,6 +131,36 @@
                 justify-content: flex-start;
                 align-self: start;
                 padding-left: 20px;
+                box-sizing: border-box;
+            }
+        } */
+        @media (max-width: 600px) {
+            .professor {
+                display: grid;
+                grid-template-columns: 80px 1fr;
+                grid-template-areas: 
+                    "foto info"
+                    "foto options";
+                column-gap: 20px;
+                row-gap: 10px;     
+                align-items: center;
+            }
+            .professor img {
+                grid-area: foto;
+                margin-right: 0; 
+            }
+            .info {
+                grid-area: info;
+                width: 100%;
+                align-self: end;
+            }
+            .options {
+                grid-area: options;
+                width: 100%;
+                display: flex;
+                justify-content: flex-end; /* Canviat de flex-start a flex-end */
+                align-self: start;
+                padding-left: 0;           /* Eliminem el padding per enganxar-lo a la dreta */
                 box-sizing: border-box;
             }
         }
@@ -167,19 +198,38 @@
         textarea {
             width: 100%;
             padding: 10px;
-            border: 1px solid #888; /* Contorn més fosc com els altres camps */
+            border: 1px solid #888;
             border-radius: 4px;
             box-sizing: border-box;
             font-size: 16px;
-            min-height: 100px;      /* Alçada mínima perquè sigui més llarg */
-            font-family: inherit;   /* Perquè no surti la lletra "Courier" per defecte */
-            resize: vertical;       /* Permet a l'usuari fer-lo més gran però no més ample */
+            min-height: 100px;      
+            font-family: inherit;   
+            resize: vertical;       
             margin-bottom: 20px;
         }
         textarea:focus {
             outline: none;
             border-color: #4CAF50;
             box-shadow: 0 0 5px rgba(76, 175, 80, 0.2);
+        }
+
+        .img-coordinator {
+            border: 3px solid #dc3545 !important;
+        }
+        .img-tutor {
+            border: 3px solid #fd7e14 !important; 
+        }
+        .role-label {
+            font-size: 12px;
+            font-weight: bold;
+            display: block;
+            margin-top: 2px;
+        }
+        .role-coordinator {
+            color: #dc3545;
+        }
+        .role-tutor {
+            color: #fd7e14;
         }
     </style>
 </head>
@@ -189,24 +239,21 @@
         <h2>Orla Enginyeries TIC 2025-26</h2>
         <p>Vols que aquest professor aparegui a la llista dels professors de l'orla d'aquest any?</p>
         <p>
-            Marca amb <b>Sí</b> si vols que el professor hi aparagui. 
+            Marca amb <b>Sí</b> si vols que el professor hi aparegui. 
             Qualsevol casella no marcada comptarà automàticament com un <b>No</b>.
             Les preguntes marcades amb <b>*</b> són obligatòries.
         </p>
         
         <form action="/votar" method="POST">
             <div style="background-color: #e9ecef; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                <label for="nom_estudiant" style="font-weight: bold; display: block; margin-bottom: 8px;">
+                <label for="EstudiantNom" style="font-weight: bold; display: block; margin-bottom: 8px;">
                     Els teu noms i cognoms:<span style="color: red;">*</span>
                 </label>
-                <input type="text" id="nom_estudiant" name="nom_estudiant" required placeholder="Escriu aquí el teu nom..." >
-                <!-- style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; margin-bottom: 15px;" -->
-                
-                <label for="grau" style="font-weight: bold; display: block; margin-bottom: 8px;">
+                <input type="text" id="EstudiantNom" name="EstudiantNom" required placeholder="Escriu aquí el teu nom..." >
+                <label for="EstudiantGrau" style="font-weight: bold; display: block; margin-bottom: 8px;">
                     Selecciona el teu grau:<span style="color: red;">*</span>
                 </label>
-                <!-- style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; background-color: white;" -->
-                <select id="grau" name="grau" required >
+                <select id="EstudiantGrau" name="EstudiantGrau" required >
                     <option value="" disabled selected style="display: none;">Selecciona el teu grau...</option>
                     <option value="GEI">GEI</option>
                     <option value="GESA">GESA</option>
@@ -214,21 +261,31 @@
                     <option value="GEXT">GEXT</option>
                 </select>
 
-                <label for="grau2" style="font-weight: bold; display: block; margin-bottom: 8px;">
-                    Selecciona el teu segon grau: <span style="color: gray;">(només per estudiants de doble grau)</span>
-                </label>
-                <select id="grau2" name="grau2" >
-                    <option value="" disabled selected style="display: none;">Selecciona el teu segon grau...</option>
-                    <option value="GEI">GEI</option>
-                    <option value="GESA">GESA</option>
-                    <option value="GEMCD">GEMCD</option>
-                    <option value="GEXT">GEXT</option>
-                </select>
+                <label for="EstudiantGrauComplementari" style="font-weight: bold; display: block; margin-bottom: 8px;">
+    Selecciona el teu segon grau: <span style="color: gray;">(només per estudiants de doble grau)</span>
+</label>
+
+                <input 
+                    type="text" 
+                    id="EstudiantGrauComplementari" 
+                    name="EstudiantGrauComplementari" 
+                    list="llistaGrausComplementaris" 
+                    placeholder="Selecciona o escriu el teu segon grau..."
+                    autocomplete="true"
+                    style="width: 100%; padding: 8px; box-sizing: border-box;"
+                >
+
+                <datalist id="llistaGrausComplementaris">
+                    <option value="GEI"></option>
+                    <option value="GESA"></option>
+                    <option value="GEMCD"></option>
+                    <option value="GEXT"></option>
+                </datalist>
 
                 <label for="subjectFilter" style="font-weight: bold; display: block; margin-top: 15px; margin-bottom: 8px;">
                     Professors mostrats: <span id="sliderValue">0</span>
                 </label>
-                <input type="range" id="subjectFilter" min="1" max="6" step="1" value="3" style="width: 100%;">
+                <input type="range" id="subjectFilter" min="0" max="6" step="1" value="4" style="width: 100%;">
 
                 <label style="font-weight: bold; display: block; margin-top: 15px; margin-bottom: 8px;">
                     Filtra per grau:
@@ -258,6 +315,7 @@
                 {% for prof in professors %}
                 <div class="professor" 
                     data-subjects="{{ prof['AssignaturaProfessorPes'] }}"
+                    data-female="{{ prof['Dona'] }}"
                     data-gei="{{ prof['gei'] }}" 
                     data-gemcd="{{ prof['gemcd'] }}" 
                     data-gext="{{ prof['gext'] }}" 
@@ -273,33 +331,43 @@
                     data-gei_gesa_gext="{{ prof['gei_gesa_gext'] }}"
                     data-gemcd_gesa_gext="{{ prof['gemcd_gesa_gext'] }}"
                     data-gei_gemcd_gesa_gext="{{ prof['gei_gemcd_gesa_gext'] }}"
+                    data-coordinator="{{ prof['Coordinador'] }}"
+                    data-tutor="{{ prof['Tutor'] }}"
                     data-current-score="0"
                 >
-                <!-- <div class="professor" 
-                    {% for clau in claus %}
-                    data-{{ clau }}="{{ prof[clau] }}"
-                    {% endfor %}
-                    data-current-score="0" 
-                > -->
-                    <img src="{{ url_for('static', filename='imatges/' + prof['Imatge']) }}" alt="Foto de {{ prof['ProfessorNom'] }}">
+                    <img 
+                        src="{{ url_for('static', filename='images/' + prof['Imatge']) }}" 
+                        alt="Foto de {{ prof['ProfessorNom'] }}"
+                        class="{% if prof['Coordinador'] and prof['Coordinador'] != '0' and prof['Coordinador'] != False %}img-coordinator{% elif prof['Tutor'] and prof['Tutor'] != '0' and prof['Tutor'] != False %}img-tutor{% endif %}">
+                    
                     <div class="info">
                         <strong>{{ prof['ProfessorNom'] }}</strong><br>
-                        <!-- <small style="color: gray;">{{ prof['ProfessorCorreu'] }}</small> -->
+                        
+                        {% if prof['Coordinador'] and prof['Coordinador'] != '0' and prof['Coordinador'] != False %}
+                            <small class="role-label role-coordinator">
+                                {% if prof['Dona'] and prof['Dona'] != '0' and prof['Dona'] != False %}coordinadora{% else %}coordinador{% endif %}
+                            </small>
+                        {% endif %}
+                        
+                        {% if prof['Tutor'] and prof['Tutor'] != '0' and prof['Tutor'] != False %}
+                            <small class="role-label role-tutor">
+                                {% if prof['Dona'] and prof['Dona'] != '0' and prof['Dona'] != False %}tutora{% else %}tutor{% endif %}
+                            </small>
+                        {% endif %}
                     </div>
                     <div class="options">
-                        <input type="hidden" name="{{ prof['ProfessorNom'] }}" value="0">
                         <input type="checkbox" name="{{ prof['ProfessorNom'] }}" value="1" class="square-check">
                     </div>
                 </div>
                 {% endfor %}
             </div>
             <div id="suggestions-box" style="margin-top: 30px; margin-bottom: 20px;">
-                <label for="suggeriments" style="font-weight: bold; display: block; margin-bottom: 8px;">
+                <label for="EstudiantSuggeriment" style="font-weight: bold; display: block; margin-bottom: 8px;">
                     Suggeriments o comentaris addicionals:
                 </label>
                 <textarea 
-                    id="suggeriments" 
-                    name="suggeriments" 
+                    id="EstudiantSuggeriment" 
+                    name="EstudiantSuggeriment" 
                     placeholder="Si trobes que falta algun professor o vols dir alguna cosa, escriu-ho aquí..." 
                 ></textarea>
 
@@ -316,7 +384,6 @@
         const professorsContainer = document.getElementById('professors-container');
         const submitButton = document.querySelector('.btn-send');
         const suggestionsBox = document.getElementById('suggestions-box');
-        // const professorsContainer = document.querySelector('.box'); 
 
         function filterAndSortProfessors() {
             const minWeight = parseInt(subjectFilter.value);
@@ -341,19 +408,13 @@
                 const countSpan = prof.querySelector('.current-count');
                 if (countSpan) 
                     countSpan.textContent = score;
-                if (score >= minWeight && score > 0) {
+                if (score >= minWeight && score >= 0) {
                     prof.style.display = 'flex';
                     visibleCount++;
                 } else {
                     prof.style.display = 'none';
                 }
             });
-
-            // const sortedProfessors = Array.from(professorsList).sort((a, b) => {
-            //     const scoreA = parseInt(a.getAttribute('data-current-score')) || 0;
-            //     const scoreB = parseInt(b.getAttribute('data-current-score')) || 0;
-            //     return scoreB - scoreA;
-            // });
 
             const sortedProfessors = Array.from(professorsList).sort((a, b) => {
                 const nameA = a.querySelector('strong').textContent.trim().toLowerCase();
@@ -377,7 +438,6 @@
             checkbox.addEventListener('change', filterAndSortProfessors);
         });
         
-
         filterAndSortProfessors();
     </script>
 </body>

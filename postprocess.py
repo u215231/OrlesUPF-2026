@@ -1,11 +1,8 @@
 import csv
-import os
 from collections import defaultdict
 import pandas as pd
 from typing import Iterable
-
-BASE_DIR = os.path.dirname(__file__)
-RESULTS_PATH = os.path.join(BASE_DIR, "data/resultats.csv")
+from common import *
 
 class AnalyzerDict:
     def analyze_results(self, filepath: str):
@@ -47,7 +44,7 @@ class AnalyzerDict:
         print(f"Total students who voted: {self.total_students}")
         
         for degree, count in self.degree_counts.items():
-            print(f"Students from {degree}: {count}")
+            print(f" - Students from {degree}: {count}")
             
         print("\n" + "=" * 70)
         print("TOP 16 PROFESSORS")
@@ -73,32 +70,13 @@ class AnalyzerDict:
         self.analyze_results(path)
         self.render_results(top)
 
-PROFESSOR_COLUMN = 4
-PROFESSOR_NAME = "ProfessorNom"
-STUDENT_NAME = "EstudiantNom"
-SUGGESTION = "EstudiantSuggeriment"
-DEGREE_KEY = "EstudiantGrau"
-TOTAL = "Total"
-
 class AnalyzerDataFrame:
-    def __init__(self, filepath: str):
-        students_df = pd.read_csv(filepath).fillna(0)
-        degrees = students_df[DEGREE_KEY].unique()
-        professors = []
-        professors_list = students_df.columns[PROFESSOR_COLUMN:]
-        for professor in professors_list:
-            professor_dict = {}
-            professor_dict[PROFESSOR_NAME] = professor
-            professor_dict[TOTAL] = students_df[professor].sum().astype(int)
-            for degree in degrees:
-                filtered_results_df = students_df[students_df[DEGREE_KEY] == degree]
-                professor_dict[degree] = filtered_results_df[professor].sum().astype(int)
-            professors.append(professor_dict)
-        self.students_df = students_df
-        self.professor_df = pd.DataFrame(professors)
-        self.degrees = [TOTAL] + list(degrees)
-        degree_count = self.students_df[DEGREE_KEY].value_counts()
-        self.degree_count = pd.DataFrame(degree_count).reset_index()
+    def __init__(self, filepath: str | Path):
+        self.students_df = self.get_students(filepath)
+        self.professor_df = self.get_professors(self.students_df)
+        self.degrees = [TOTAL] + list(self.students_df[STUDENT_DEGREE].unique())
+        self.degree_count = pd.DataFrame(self.students_df[STUDENT_DEGREE].value_counts()).reset_index()
+        self.line_length = 10
 
     def top_results(self, degrees: list[str] = None, top: int = 16) -> pd.DataFrame:
         if degrees is None:
@@ -116,42 +94,75 @@ class AnalyzerDataFrame:
         professor_df = professor_df.reset_index(drop=True)
         return professor_df
     
-    def render_teachers_results(self):
-        print("Teacher vote counts:")
-        for degree in self.degrees:
-            print(analyzer.top_results(degrees=degree))
-            print()
-    
     def render_students_results(self):
         students_df = self.students_df
 
-        print("Students list votes:")
-        for i, (_, row) in enumerate(students_df.iterrows()):
-            student_name = row[STUDENT_NAME]
-            student_degree = row[DEGREE_KEY]
-            professors = row[PROFESSOR_COLUMN:]
+        print("\n--- Students list votes ---\n")
+        for i, series in students_df.iterrows():
+            student_name = series[STUDENT_NAME]
+            student_degree = series[STUDENT_DEGREE]
+            professors = series[series.apply(lambda x: isinstance(x, bool))]
             print(f"{i}) [{student_degree}] {student_name}")
-            print("-"*10)
+            print("-" * self.line_length)
             [print(t) for t in professors[professors > 0].index]
+            
             print()
         
         print(f"Total students who voted: {len(students_df)}")
-        for _, row in self.degree_count.iterrows():
-            print(f"Students from {row[DEGREE_KEY]}: {row["count"]}")
-        print()
+        for _, series in self.degree_count.iterrows():
+            print(f"- Students from {series[STUDENT_DEGREE]}: {series["count"]}")
 
+    def render_teachers_results(self):
+        print("\n--- Teacher vote counts ---\n")
+        for i, degree in enumerate(self.degrees):
+            print(self.top_results(degrees=degree))
+            print() if i < len(self.degrees) - 1 else None
 
     def render_student_suggestions(self):
-        print("Students suggestions:")
-        students_df = self.students_df
-        for i, (_, row) in enumerate(students_df.iterrows()):
-            student_name = row[STUDENT_NAME]
-            student_degree = row[DEGREE_KEY]
-            student_suggestion = row[SUGGESTION]
+        if not self.students_df[STUDENT_SUGGESTION].apply(lambda s: len(s)).any():
+            return
+        print("\n--- Students suggestions ---")
+        for i, series in self.students_df.iterrows():
+            student_suggestion = series[STUDENT_SUGGESTION]
+            if len(student_suggestion) == 0:
+                continue
+            student_name = series[STUDENT_NAME]
+            student_degree = series[STUDENT_DEGREE]
             print(f"{i}) [{student_degree}] {student_name.rstrip(" ")}: {student_suggestion}")
 
+    def render_results(self):
+        print("\n------ Results Analysis ------")
+        self.render_students_results()
+        self.render_teachers_results()
+        self.render_student_suggestions()
+        print()
+
+    @staticmethod
+    def get_professors(students_df: pd.DataFrame) -> pd.DataFrame:
+        degrees = students_df[STUDENT_DEGREE].unique()
+        professors = []
+        for professor in students_df.select_dtypes(bool):
+            professor_dict = {}
+            professor_dict[PROFESSOR_NAME] = professor
+            professor_dict[TOTAL] = students_df[professor].sum().astype(int)
+            for degree in degrees:
+                filtered_results_df = students_df[students_df[STUDENT_DEGREE] == degree]
+                professor_dict[degree] = filtered_results_df[professor].sum().astype(int)
+            professors.append(professor_dict)
+        return pd.DataFrame(professors)
+
+    @staticmethod
+    def get_students(filepath: str | Path) -> pd.DataFrame: 
+        df = (
+            pd.read_csv(filepath)
+            if str(filepath).endswith('csv')
+            else pd.read_json(filepath)
+        )
+        return (
+            df
+            .fillna({c: 0 for c in df.columns if c not in STUDENT_FIXED_KEYS})
+            .astype({c: str if c in STUDENT_FIXED_KEYS else bool for c in df.columns})
+        )
+
 if __name__ == "__main__":
-    analyzer = AnalyzerDataFrame(RESULTS_PATH)
-    analyzer.render_students_results()
-    analyzer.render_teachers_results()
-    analyzer.render_student_suggestions()
+    AnalyzerDataFrame(RESULTS_PATH).render_results()
