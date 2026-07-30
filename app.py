@@ -1,6 +1,5 @@
 import os
 import csv
-import unicodedata
 import json
 from common import *
 import flask
@@ -22,12 +21,6 @@ def safe_int(value):
         return int(value)
     except (ValueError, TypeError):
         return value
-
-def generate_image_name(name: str) -> str:
-    name = unicodedata.normalize('NFKD', name)
-    name = name.encode('ASCII', 'ignore').decode('utf-8')
-    name = name.lower().replace(' ', '_').replace('\'', '_') + '.jpg'    
-    return name
 
 def read_teachers(
     path: str = TEACHERS_PATH,
